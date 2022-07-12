@@ -1,6 +1,8 @@
 import { ApolloServer, gql } from "apollo-server";
 import fetch from "node-fetch";
 
+const BASE_URL = "https://yts-proxy.now.sh/";
+
 const typeDefs = gql`
   type Movie {
     id: Int!
@@ -13,15 +15,22 @@ const typeDefs = gql`
   }
   type Query {
     allMovies: [Movie]
+    movie(id: ID!): Movie
   }
 `;
 
 const resolvers = {
   Query: {
     allMovies() {
-      return fetch("https://yts-proxy.now.sh/list_movies.json")
+      return fetch(`${BASE_URL}/list_movies.json`)
         .then((res) => res.json())
         .then((json) => json.data.movies);
+    },
+    movie(_, { id }) {
+      console.log("id", id);
+      return fetch(`${BASE_URL}/movie_details.json?movie_id=${id}`)
+        .then((res) => res.json())
+        .then((json) => json.data.movie);
     },
   },
 };
