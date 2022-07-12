@@ -2,32 +2,37 @@ import { gql, useQuery } from "@apollo/client";
 import React from "react";
 import { Link } from "react-router-dom";
 
+import * as S from "./Home.style";
+
 const GET_MOVIES = gql`
   query getMovies {
     allMovies {
       id
       title
+      medium_cover_image
     }
   }
 `;
 
 function Home() {
-  const { data, loading, error } = useQuery(GET_MOVIES);
-
-  if (loading) return <h1>Loading...</h1>;
-  if (error) return <h1>Error!!</h1>;
+  const { data, loading } = useQuery(GET_MOVIES);
 
   return (
-    <div>
-      <h1>Movie List</h1>
-      <ul>
-        {data.allMovies.map((movie) => (
-          <li key={movie.id}>
-            <Link to={`/movies/${movie.id}`}>{movie.title}</Link>
-          </li>
+    <S.Container>
+      <S.Header>
+        <S.Title>Movie App</S.Title>
+      </S.Header>
+      {loading && <S.Loading>Loading...</S.Loading>}
+      <S.MoviesGrid>
+        {data?.allMovies?.map((movie) => (
+          <S.PosterContainer key={movie.id}>
+            <Link to={`/movies/${movie.id}`}>
+              <S.PosterBg background={movie.medium_cover_image} />
+            </Link>
+          </S.PosterContainer>
         ))}
-      </ul>
-    </div>
+      </S.MoviesGrid>
+    </S.Container>
   );
 }
 
